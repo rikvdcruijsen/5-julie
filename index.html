@@ -36,14 +36,14 @@
     );
   }
 
-  /* ── Muziekknop Styling ── */
+  /* ── Muziekknop Styling (Iets kleiner & met Play-icoon) ── */
   #muteBtn {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 100;
-    width: 50px;
-    height: 50px;
+    width: 42px;  /* Kleiner gemaakt (was 50px) */
+    height: 42px; /* Kleiner gemaakt (was 50px) */
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -52,10 +52,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 16px; /* Iets kleiner gezet voor betere verhouding */
     cursor: pointer;
     transition: transform 0.2s ease, background 0.2s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    padding-left: 2px; /* Zorgt dat het Play-driehoekje optisch perfect in het midden staat */
   }
   #muteBtn:hover {
     background: rgba(255, 255, 255, 0.25);
@@ -131,7 +132,7 @@
 <div id="gradient"></div>
 <div id="hearts"></div>
 
-<button id="muteBtn" onclick="toggleMute()">🔇</button>
+<button id="muteBtn" onclick="toggleMute()">▶️</button>
 
 <div id="counter">
   <div id="counter-label">Together since</div>
@@ -192,14 +193,16 @@
     
     if (audio.paused) {
       audio.play().catch(err => console.log("Afspelen geblokkeerd:", err));
-      muteBtn.textContent = '🔊';
+      muteBtn.textContent = '⏸️'; // Verander naar Pauze-teken als hij speelt
+      muteBtn.style.paddingLeft = "0px"; // Reset padding voor gecentreerd pauze-teken
     } else {
       audio.pause();
-      muteBtn.textContent = '🔇';
+      muteBtn.textContent = '▶️'; // Verander terug naar Play-teken bij pauze
+      muteBtn.style.paddingLeft = "2px"; // Voeg kleine offset toe voor het driehoekje
     }
   }
 
-  // ── Image Setup (Leest geüploade foto) ──
+  // ── Image Setup ──
   let imgBase64 = null, imgMime = null;
 
   function setImage(inp) {
@@ -217,7 +220,7 @@
     reader.readAsDataURL(file);
   }
 
-  // ── Audio Setup (Leest geüpload muziekbestand) ──
+  // ── Audio Setup ──
   const audio = document.getElementById('audio');
   let muted = false, audioBase64 = null, audioMime = null;
 
@@ -230,7 +233,8 @@
       audioBase64 = e.target.result;
       audio.src = audioBase64;
       audio.play().then(() => {
-        document.getElementById('muteBtn').textContent = '🔊';
+        document.getElementById('muteBtn').textContent = '⏸️';
+        document.getElementById('muteBtn').style.paddingLeft = "0px";
       }).catch(() => {});
       document.getElementById('songLabel').classList.add('done');
       document.getElementById('songLabel').textContent = '✅ Song set';
@@ -244,7 +248,7 @@
       document.getElementById('dlBtn').style.display = 'flex';
   }
 
-  // ── Download de uiteindelijke NFC-pagina (Zonder setup-knoppen en mét juiste code) ──
+  // ── Download de uiteindelijke NFC-pagina ──
   function downloadPage() {
     const bgStyle = imgBase64 ? `background-image:url('${imgBase64}');` : `background-image:url('Ontwerp zonder titel (3).png');`;
     const audioTag = audioBase64
@@ -269,12 +273,12 @@ body{width:100vw;height:100vh;overflow:hidden;font-family:Georgia,serif;backgrou
 .unit{text-align:center}
 .unit-num{font-size:38px;font-weight:700;line-height:1;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .unit-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:3px}
-#muteBtn {position:fixed;top:20px;right:20px;z-index:100;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform .2s ease,background .2s ease;box-shadow:0 4px 15px rgba(0,0,0,.3);}
+#muteBtn {position:fixed;top:20px;right:20px;z-index:100;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:transform .2s ease,background .2s ease;box-shadow:0 4px 15px rgba(0,0,0,.3);padding-left:2px;}
 #muteBtn:hover{background:rgba(255,255,255,.25);transform:scale(1.05)}
 #muteBtn:active{transform:scale(0.95)}
 </style></head><body>
 <div id="bg"></div><div id="hearts"></div>
-<button id="muteBtn" onclick="toggleMute()">🔇</button>
+<button id="muteBtn" onclick="toggleMute()">▶️</button>
 <div id="counter">
   <div id="counter-label">❤️ Together for</div>
   <div class="units">
@@ -292,8 +296,8 @@ function tick(){const diff=Date.now()-START.getTime();const abs=Math.abs(diff);c
 setInterval(tick,1000);tick();
 function spawnHeart(){const el=document.createElement('div');el.className='heart';el.textContent=EMOJIS[Math.random()*EMOJIS.length|0];const size=14+Math.random()*22;const dur=5+Math.random()*7;el.style.cssText='left:'+Math.random()*100+'vw;font-size:'+size+'px;animation-duration:'+dur+'s;animation-delay:'+Math.random()*1.5+'s;';document.getElementById('hearts').appendChild(el);setTimeout(()=>el.remove(),(dur+2)*1000);}
 setInterval(spawnHeart,700);for(let i=0;i<5;i++)spawnHeart();
-function toggleMute(){const audio=document.getElementById('audio');const muteBtn=document.getElementById('muteBtn');if(audio.paused){audio.play().catch(()=>{});muteBtn.textContent='🔊';}else{audio.pause();muteBtn.textContent='🔇';}}
-document.addEventListener('pointerdown',()=>{if(audio.src&&audio.paused)audio.play().then(()=>{document.getElementById('muteBtn').textContent='🔊';}).catch(()=>{});},{once:true});
+function toggleMute(){const audio=document.getElementById('audio');const muteBtn=document.getElementById('muteBtn');if(audio.paused){audio.play().catch(()=>{});muteBtn.textContent='⏸️';muteBtn.style.paddingLeft="0px";}else{audio.pause();muteBtn.textContent='▶️';muteBtn.style.paddingLeft="2px";}}
+document.addEventListener('pointerdown',()=>{if(audio.src&&audio.paused)audio.play().then(()=>{document.getElementById('muteBtn').textContent='⏸️';document.getElementById('muteBtn').style.paddingLeft="0px";}).catch(()=>{});},{once:true});
 <\/script></body></html>`;
 
     const blob = new Blob([html], { type: 'text/html' });
@@ -303,11 +307,13 @@ document.addEventListener('pointerdown',()=>{if(audio.src&&audio.paused)audio.pl
     a.click();
   }
 
-  // Start de muziek zodra de gebruiker voor de allereerste keer het scherm aanraakt
+  // Eerste interactie op het scherm start de muziek en past direct het icoontje aan naar pauze
   document.addEventListener('pointerdown', () => {
     if (audio.src && audio.paused) {
       audio.play().then(() => {
-        document.getElementById('muteBtn').textContent = '🔊';
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.textContent = '⏸️';
+        muteBtn.style.paddingLeft = "0px";
       }).catch(() => {});
     }
   }, { once: true });
