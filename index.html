@@ -159,6 +159,18 @@ will-change: transform;
 
 
 <script>
+
+function toggleMute() {
+  const audio = document.getElementById('audio');
+  const muteBtn = document.getElementById('muteBtn');
+  if (audio.paused) {
+    audio.play().then(() => muteBtn.textContent = 'PAUSE').catch(() => {});
+  } else {
+    audio.pause();
+    muteBtn.textContent = 'PLAY';
+  }
+}
+ 
 window.addEventListener("DOMContentLoaded", () => {
   const intro = document.getElementById("intro");
 
