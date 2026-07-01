@@ -14,16 +14,17 @@
     user-select: none;
   }
 
-  #bg {
-    position:fixed;
-    inset:0;
-    background-image:url('Ontwerp zonder titel (3).png');
-    background-size:cover;
-    background-position:center top;
-    background-repeat:no-repeat;
-    transition: opacity 1s ease;
-     will-change: transform;
-  }
+#bg {
+  position: fixed;
+  inset: 0;
+  background-image: url('Ontwerp zonder titel (3).png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+  transform: translate3d(0,0,0) scale(1.06);
+}
 
   /* ── Muziekknop Styling (Strak grijs, langwerpig voor tekst) ── */
   #muteBtn {
@@ -157,18 +158,37 @@
 
 
 <script>
-window.addEventListener("load", () => {
+window.addEventListener("DOMContentLoaded", () => {
   const intro = document.getElementById("intro");
+  const audio = document.getElementById("audio");
+
   if (!intro) return;
 
+  // start muziek zo vroeg mogelijk
+  if (audio) {
+    audio.volume = 0;
+    audio.play().then(() => {
+      // fade muziek in
+      let v = 0;
+      const fade = setInterval(() => {
+        v += 0.05;
+        audio.volume = Math.min(v, 1);
+        if (v >= 1) clearInterval(fade);
+      }, 100);
+    }).catch(() => {});
+  }
+
+  // fade out intro
   setTimeout(() => {
     intro.style.opacity = "0";
-  }, 2200);
+  }, 2500);
 
+  // verwijder pas NA fade
   setTimeout(() => {
     intro.remove();
-  }, 4200);
+  }, 4800);
 });
+ 
   const START = new Date('2026-06-06T00:00:00');
   const EMOJIS = ['❤️','🩷','💕','💗','💖','🤍','💓'];
 
@@ -394,32 +414,40 @@ document.addEventListener('pointerdown',()=>{if(audio.src&&audio.paused)audio.pl
   for (let i = 0; i < amount; i++) spawnHeart();
 }
 
-document.addEventListener("pointerdown", (e) => {
+document.addEventListener("pointerup", () => {
   burstHearts(5);
 }, { passive: true });
 
 const bg = document.getElementById("bg");
 
-let x = 0;
-let y = 0;
+let targetX = 0;
+let targetY = 0;
+let currentX = 0;
+let currentY = 0;
 
-function applyBG() {
-  bg.style.transform = `translate(${x}px, ${y}px) scale(1.06)`;
+function animateBG() {
+  currentX += (targetX - currentX) * 0.08;
+  currentY += (targetY - currentY) * 0.08;
+
+  bg.style.transform =
+    `translate3d(${currentX}px, ${currentY}px, 0) scale(1.06)`;
+
+  requestAnimationFrame(animateBG);
 }
+
+animateBG();
 
 // desktop movement
 document.addEventListener("mousemove", (e) => {
-  x = (e.clientX / window.innerWidth - 0.5) * 10;
-  y = (e.clientY / window.innerHeight - 0.5) * 10;
-  applyBG();
+  targetX = (e.clientX / window.innerWidth - 0.5) * 10;
+  targetY = (e.clientY / window.innerHeight - 0.5) * 10;
 });
 
 // mobile tilt
 window.addEventListener("deviceorientation", (e) => {
-if (e.gamma == null || e.beta == null) return;
-  x = e.gamma / 3;
-  y = e.beta / 3;
-  applyBG();
+  if (!e.gamma || !e.beta) return;
+  targetX = e.gamma / 3;
+  targetY = e.beta / 3;
 });
  
 </script>
