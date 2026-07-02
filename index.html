@@ -26,13 +26,18 @@
     transform: translate3d(0,0,0) scale(1.06);
   }
 
-  /* ── Muziekknop Styling ── */
-  #muteBtn {
+  /* ── Muziek controls ── */
+  #controls {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 100;
-    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+  }
+
+  .ctrlBtn {
+    padding: 8px 14px;
     border-radius: 20px;
     background: rgba(150, 150, 150, 0.15);
     border: 1px solid rgba(150, 150, 150, 0.35);
@@ -53,7 +58,7 @@
     outline: none;
     transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
-  #muteBtn:hover, #muteBtn:active {
+  .ctrlBtn:hover, .ctrlBtn:active {
     background: rgba(150, 150, 150, 0.3);
     border-color: rgba(150, 150, 150, 0.5);
     color: #ffffff;
@@ -101,6 +106,19 @@
     color:rgba(255,255,255,.5); margin-top:3px;
   }
 
+  /* ── Songtitel (optioneel klein label) ── */
+  #nowPlaying {
+    position: fixed;
+    top: 62px;
+    right: 20px;
+    z-index: 100;
+    font-size: 10px;
+    color: rgba(255,255,255,.55);
+    letter-spacing: 1px;
+    text-align: right;
+    max-width: 200px;
+  }
+
   /* ── Cinematic intro ── */
   #intro {
     position: fixed;
@@ -134,7 +152,12 @@
 <div id="bg"></div>
 <div id="hearts"></div>
 
-<button id="muteBtn" onclick="toggleMute()">PLAY</button>
+<div id="controls">
+  <button class="ctrlBtn" id="prevBtn" onclick="prevSong()">⏮</button>
+  <button class="ctrlBtn" id="muteBtn" onclick="toggleMute()">PLAY</button>
+  <button class="ctrlBtn" id="nextBtn" onclick="nextSong()">⏭</button>
+</div>
+<div id="nowPlaying"></div>
 
 <div id="counter">
   <div id="counter-label">Together since</div>
@@ -146,15 +169,61 @@
   </div>
 </div>
 
-<audio id="audio" src="Michael Bublé - Everything [Official Music Video].mp3" loop></audio>
+<audio id="audio" loop></audio>
 
 <script>
   const audio = document.getElementById('audio');
   const bg = document.getElementById('bg');
+  const muteBtn = document.getElementById('muteBtn');
+  const nowPlaying = document.getElementById('nowPlaying');
+
+  // ── Playlist: voeg hier je nummers toe ──
+  // Zet gewoon bestandsnamen (of paden) in deze array, in de volgorde die je wilt.
+  const PLAYLIST = [
+    "Michael Bublé - Everything [Official Music Video].mp3",
+     "@coldplay - The Scientist (Lyrics).mp3",
+ "Chef'Special - In Your Arms (Official Video).mp3",
+ "Don McLean - American Pie (Lyrics).mp3",
+ "Extreme - More Than Words (Lyrics).mp3",
+ "Harry Styles - Sign of the Times (Lyrics).mp3",
+ "Jason Mraz - I'm Yours (Lyrics).mp3",
+ "Labrinth - Beneath Your Beautiful (Official Video) ft. Emeli Sandé.mp3",
+ "Matt Simons - With you ( lyrics ).mp3",
+ "Mumford & Sons - I Will Wait (Lyrics).mp3",
+ "Niels Geusebroek - Take Your Time Girl (Official Video).mp3",
+ "Soldier on Di-rect  lyrics.mp3",
+ "Taylor Swift - Love Story (Lyrics).mp3"
+ 
+  ];
+
+  let currentTrack = 0;
+
+  function loadTrack(index, autoplay) {
+    // Zorgt dat index altijd binnen de playlist blijft (ook bij negatief/overflow)
+    currentTrack = (index + PLAYLIST.length) % PLAYLIST.length;
+    audio.src = PLAYLIST[currentTrack];
+    nowPlaying.textContent = PLAYLIST[currentTrack]
+      .replace(/\.[^/.]+$/, ""); // haalt bestandsextensie weg voor nettere weergave
+
+    if (autoplay) {
+      audio.play().then(() => {
+        muteBtn.textContent = 'PAUSE';
+      }).catch(() => {});
+    } else {
+      muteBtn.textContent = 'PLAY';
+    }
+  }
+
+  function nextSong() {
+    loadTrack(currentTrack + 1, true);
+  }
+
+  function prevSong() {
+    loadTrack(currentTrack - 1, true);
+  }
 
   // ── Mute/play toggle ──
   function toggleMute() {
-    const muteBtn = document.getElementById('muteBtn');
     if (audio.paused) {
       audio.play().then(() => muteBtn.textContent = 'PAUSE').catch(() => {});
     } else {
@@ -162,6 +231,9 @@
       muteBtn.textContent = 'PLAY';
     }
   }
+
+  // Eerste nummer klaarzetten (nog niet afspelen, wacht op user-interactie)
+  loadTrack(0, false);
 
   // ── Intro fade ──
   window.addEventListener("DOMContentLoaded", () => {
@@ -220,7 +292,7 @@
   document.addEventListener('pointerdown', () => {
     if (audio.src && audio.paused) {
       audio.play().then(() => {
-        document.getElementById('muteBtn').textContent = 'PAUSE';
+        muteBtn.textContent = 'PAUSE';
       }).catch(() => {});
     }
   }, { once: true });
