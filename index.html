@@ -130,6 +130,65 @@
   @keyframes fadeInTitle {
     to { opacity: 1; transform: scale(1.05); }
   }
+  
+  /* ── Kloppend hart boven de counter ── */
+#miniHeart {
+  text-align: center;
+  font-size: 34px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  animation: pulseHeart 1.15s infinite ease-in-out;
+  filter: drop-shadow(0 2px 10px rgba(255,255,255,.35));
+}
+@keyframes pulseHeart {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.3); }
+}
+
+/* ── Easter egg overlay ── */
+#easterEgg {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease;
+}
+#easterEgg.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#easterEggContent {
+  max-width: 320px;
+  text-align: center;
+  color: #fff;
+}
+#easterEggText {
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  text-shadow: 0 2px 10px rgba(0,0,0,.5);
+}
+#easterEggClose {
+  padding: 9px 22px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  font-family: 'Georgia', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+#easterEggClose:hover { background: rgba(255,255,255,.22); }
 </style>
 </head>
 <body>
@@ -145,6 +204,7 @@
   <button class="ctrlBtn" id="nextBtn" onclick="nextSong()">⏭</button>
 </div>
 <div id="counter">
+  <div id="miniHeart" onclick="revealEasterEgg()">❤️</div>
   <div id="counter-label">Together since</div>
   <div class="units">
     <div class="unit"><div class="unit-num" id="d">0</div><div class="unit-lbl">days</div></div>
@@ -155,6 +215,13 @@
 </div>
 
 <audio id="audio" loop></audio>
+
+<div id="easterEgg">
+  <div id="easterEggContent">
+    <p id="easterEggText">✨ Hmm... Easter Egg gevonden zo te zien, had ik ergens al gezegd dat ik van je hou? Volgensmij niet. ✨</p>
+    <button id="easterEggClose" onclick="closeEasterEgg()">Sluiten</button>
+  </div>
+</div>
 
 <script>
   const audio = document.getElementById('audio');
@@ -281,6 +348,15 @@
   document.addEventListener('pointerdown', () => {
     burstHearts(5);
   }, { passive: true });
+  
+    // ── Easter egg ──
+function revealEasterEgg() {
+  document.getElementById('easterEgg').classList.add('show');
+  burstHearts(10);
+}
+function closeEasterEgg() {
+  document.getElementById('easterEgg').classList.remove('show');
+}
 
   // ── Parallax background ──
   let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
@@ -303,6 +379,8 @@
     targetX = e.gamma / 3;
     targetY = e.beta / 3;
   });
+  
+
 </script>
 </body>
 </html>
