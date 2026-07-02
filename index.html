@@ -301,7 +301,7 @@
     const sign = diff < 0;
 
     document.getElementById('counter-label').textContent =
-      sign ? '✨ Starting in' : '❤️';
+      sign ? '✨ Starting in' : '';
 
     document.getElementById('d').textContent = Math.floor(abs / 86400000);
     document.getElementById('h').textContent = Math.floor((abs % 86400000) / 3600000);
