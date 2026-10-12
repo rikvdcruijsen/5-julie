@@ -1,194 +1,331 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>06.06.2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    width:100vw; height:100vh; overflow:hidden;
-    font-family: 'Georgia', serif;
-    background: #111;
-    user-select: none;
-    overscroll-behavior: none;
+  :root {
+    --hand: 'Caveat', 'Bradley Hand', 'Segoe Print', cursive;
+    --serif: 'Georgia', serif;
+    --paper: #fbf8f1;
+    --rope: #8b6a43;
+    --rope-light: #cfae7c;
   }
 
+  html, body {
+    width:100%; height:100%; overflow:hidden;
+    font-family: var(--serif);
+    background: #111;
+    user-select: none; -webkit-user-select: none;
+    overscroll-behavior: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; outline: none; }
+
+  /* ── Achtergrond ── */
   #bg {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0; z-index: 0;
+    background-color: #2a2230;
     background-image: url('Ontwerp zonder titel (3).png');
     background-size: cover;
     background-position: center top;
     background-repeat: no-repeat;
+    filter: brightness(.78);
     will-change: transform;
     transform: translate3d(0,0,0) scale(1.06);
   }
-
-  /* ── Muziek controls ── */
-  #controls {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
-    display: flex;
-    gap: 8px;
+  #vignette {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 100%),
+      linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55));
   }
 
-  .ctrlBtn {
-    padding: 8px 14px;
-    border-radius: 20px;
-    background: rgba(150, 150, 150, 0.15);
-    border: 1px solid rgba(150, 150, 150, 0.35);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaaaaa;
-    font-family: 'Georgia', serif;
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  }
-  .ctrlBtn:hover, .ctrlBtn:active {
-    background: rgba(150, 150, 150, 0.3);
-    border-color: rgba(150, 150, 150, 0.5);
-    color: #ffffff;
-    transform: scale(1.03);
-  }
-
-  /* ── Hearts ── */
+  /* ── Zwevende hartjes (onderaan, rustig) ── */
   #hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:5; }
-
-  .heart {
-    position:absolute; bottom:-60px;
-    animation: floatUp linear forwards;
-    opacity:0;
-  }
-
+  .heart { position:absolute; bottom:-60px; animation: floatUp linear forwards; opacity:0; }
   @keyframes floatUp {
-    0%   { transform: translateY(0)       scale(.6) rotate(-10deg); opacity:0; }
+    0%   { transform: translateY(0) scale(.6) rotate(-10deg); opacity:0; }
     8%   { opacity:1; }
-    50%  { transform: translateY(-50vh)   scale(1)  rotate(8deg); }
+    50%  { transform: translateY(-50vh) scale(1) rotate(8deg); }
     90%  { opacity:.7; }
-    100% { transform: translateY(-115vh)  scale(1.1) rotate(-5deg); opacity:0; }
+    100% { transform: translateY(-115vh) scale(1.1) rotate(-5deg); opacity:0; }
   }
+
+  /* ── Hartjes uit je vingertop ── */
+  #fingerHearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:700; }
+  .fHeart { position:absolute; will-change: transform, opacity; text-shadow: 0 2px 8px rgba(0,0,0,.25); }
+
+  /* ── Touw + polaroids ── */
+  #rope {
+    position: fixed; top: 0; left: 0; z-index: 14; pointer-events: none;
+    filter: drop-shadow(0 4px 4px rgba(0,0,0,.45));
+    overflow: visible;
+  }
+  #stage {
+    position: fixed; top: 0; left: 0; right: 0; height: 66%;
+    z-index: 15;
+    overflow: hidden;
+    touch-action: none;
+  }
+  .polaroid {
+    position: absolute; top: 0; left: 0;
+    width: var(--cw, 230px);
+    transform-origin: 50% 0;
+    will-change: transform, opacity;
+    cursor: pointer;
+  }
+  .polaroid .frame {
+    margin-top: 6px;
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.7), rgba(0,0,0,.03)),
+      var(--paper);
+    padding: 12px 12px 46px;
+    border-radius: 3px;
+    box-shadow: 0 12px 26px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.3);
+  }
+  .polaroid img, #lbImg {
+    display: block; width: 100%;
+    aspect-ratio: 1 / 1; object-fit: cover;
+    background: #2a2230;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+  }
+  /* houten wasknijper */
+  .pin {
+    position: absolute; top: -17px; left: 50%;
+    width: 17px; height: 38px; transform: translateX(-50%);
+    border-radius: 3px 3px 5px 5px;
+    background: linear-gradient(90deg, #dcab6d, #b98040 44%, #5e3a1a 48%, #5e3a1a 52%, #b98040 56%, #dcab6d);
+    box-shadow: 0 3px 5px rgba(0,0,0,.45);
+    z-index: 2;
+  }
+  .pin::after {
+    content: ''; position: absolute; top: 12px; left: 50%;
+    width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #eee, #888);
+  }
+
+  /* ── Lightbox ── */
+  #lightbox {
+    position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,.8);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  #lightbox.show { opacity: 1; pointer-events: auto; }
+  .lbFrame {
+    width: min(84vw, 420px);
+    background: var(--paper); padding: 14px 14px 56px; border-radius: 3px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.6);
+    transform: rotate(-2deg) scale(.9); transition: transform .45s cubic-bezier(.2,.9,.3,1.2);
+  }
+  #lightbox.show .lbFrame { transform: rotate(-1.5deg) scale(1); }
+  #lbImg { aspect-ratio: auto; max-height: 58vh; object-fit: contain; }
 
   /* ── Counter ── */
   #counter {
     position:fixed; bottom:90px; left:0; right:0;
-    text-align:center; color:#fff; z-index:10;
-    padding: 0 20px;
-  }
-
-  #counter-label {
-    font-size:11px; letter-spacing:4px; text-transform:uppercase;
-    color:rgba(255,255,255,.6); margin-bottom:10px;
-  }
-
-  .units { display:flex; justify-content:center; gap:18px; }
-
-  .unit { text-align:center; }
-  .unit-num {
-    font-size:38px; font-weight:700; line-height:1;
-    text-shadow: 0 2px 12px rgba(0,0,0,.6);
-  }
-  .unit-lbl {
-    font-size:9px; letter-spacing:2px; text-transform:uppercase;
-    color:rgba(255,255,255,.5); margin-top:3px;
-  }
-
-  /* ── Cinematic intro ── */
-  #intro {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 999;
-    color: #fff;
-    transition: opacity 1.8s ease;
-    opacity: 1;
+    text-align:center; color:#fff; z-index:10; padding: 0 20px;
     pointer-events: none;
   }
-  #intro h1 {
-    font-size: 28px;
-    letter-spacing: 6px;
-    opacity: 0;
-    animation: fadeInTitle 2.5s ease forwards 1s;
+  #counter > * { pointer-events: auto; }
+  #counter-label {
+    font-size:11px; letter-spacing:4px; text-transform:uppercase;
+    color:rgba(255,255,255,.6); margin-bottom:10px; min-height: 13px;
   }
-  @keyframes fadeInTitle {
-    to { opacity: 1; transform: scale(1.05); }
-  }
-  
-  /* ── Kloppend hart boven de counter ── */
-#miniHeart {
-  text-align: center;
-  font-size: 34px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  animation: pulseHeart 1.15s infinite ease-in-out;
-  filter: drop-shadow(0 2px 10px rgba(255,255,255,.35));
-}
-@keyframes pulseHeart {
-  0%,100% { transform: scale(1); }
-  50%     { transform: scale(1.3); }
-}
+  .units { display:flex; justify-content:center; gap:18px; }
+  .unit { text-align:center; }
+  .unit-num { font-size:38px; font-weight:700; line-height:1; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+  .unit-lbl { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.55); margin-top:3px; }
 
-/* ── Easter egg overlay ── */
-#easterEgg {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  background: rgba(0,0,0,.78);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .4s ease;
-}
-#easterEgg.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-#easterEggContent {
-  max-width: 320px;
-  text-align: center;
-  color: #fff;
-}
-#easterEggText {
-  font-size: 17px;
-  line-height: 1.7;
-  margin-bottom: 24px;
-  text-shadow: 0 2px 10px rgba(0,0,0,.5);
-}
-#easterEggClose {
-  padding: 9px 22px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.4);
-  background: rgba(255,255,255,.1);
-  color: #fff;
-  font-family: 'Georgia', serif;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-#easterEggClose:hover { background: rgba(255,255,255,.22); }
+  #miniHeart {
+    display: inline-block; font-size: 34px; margin-bottom: 12px;
+    animation: pulseHeart 1.15s infinite ease-in-out;
+    filter: drop-shadow(0 2px 10px rgba(255,255,255,.35));
+  }
+  @keyframes pulseHeart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+  /* ── Intro ── */
+  #intro {
+    position: fixed; inset: 0; background: #000;
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    z-index: 999; color: #fff; transition: opacity 1.8s ease; opacity: 1; pointer-events: none;
+  }
+  #intro h1 { font-size: 28px; letter-spacing: 6px; opacity: 0; animation: fadeInTitle 2.5s ease forwards 1s; }
+  @keyframes fadeInTitle { to { opacity: 1; transform: scale(1.05); } }
+
+  /* ── Muziekspeler ── */
+  #player {
+    position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); left: 50%; z-index: 100;
+    width: min(340px, calc(100vw - 24px));
+    transform: translateX(-50%);
+    color: #fff;
+    background: linear-gradient(145deg, rgba(48,32,52,.62), rgba(18,14,24,.58));
+    border: 1px solid rgba(255,255,255,.16);
+    backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    border-radius: 30px;
+    box-shadow: 0 12px 32px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.14);
+    overflow: hidden;
+    transition: width .35s ease;
+  }
+  #player.collapsed { width: min(292px, calc(100vw - 24px)); }
+  #pill { display: flex; align-items: center; gap: 6px; padding: 7px 8px; }
+
+  /* draaiend plaatje */
+  .disc {
+    width: 42px; height: 42px; flex: none; border-radius: 50%; position: relative;
+    background: repeating-radial-gradient(circle at 50% 50%, #151515 0 2px, #262626 2px 3px);
+    box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.1);
+    animation: spin 5s linear infinite; animation-play-state: paused;
+  }
+  .disc::before {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(transparent 0 20%, rgba(255,255,255,.2) 25%, transparent 30% 70%, rgba(255,255,255,.15) 75%, transparent 80%);
+  }
+  .disc::after {
+    content: ''; position: absolute; inset: 14px; border-radius: 50%;
+    background: radial-gradient(circle, #111 0 2px, #ff9db5 2.5px);
+  }
+  #player.playing .disc { animation-play-state: running; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .pBtn {
+    width: 34px; height: 34px; flex: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.92); transition: background .2s, transform .15s, color .2s;
+  }
+  .pBtn svg { width: 17px; height: 17px; fill: currentColor; }
+  .pBtn svg.st { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .pBtn:hover { background: rgba(255,255,255,.14); }
+  .pBtn:active { transform: scale(.9); }
+  .pBtn.main {
+    width: 38px; height: 38px; color: #fff;
+    background: linear-gradient(145deg, #ff9db5, #ff5f86);
+    box-shadow: 0 4px 14px rgba(255,95,134,.45);
+  }
+  .pBtn.main:hover { background: linear-gradient(145deg, #ffb0c3, #ff6f94); }
+  .pBtn.on { color: #ff9db5; background: rgba(255,157,181,.16); }
+  #pInfo { flex: 1; min-width: 0; padding: 0 4px; cursor: pointer; }
+  #pTitle, #pArtist { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #pTitle { font-size: 14px; font-weight: 700; letter-spacing: .2px; }
+  #pArtist { font-size: 11px; color: rgba(255,255,255,.62); margin-top: 2px; font-style: italic; }
+  #pChev { display: flex; transition: transform .3s; }
+  #player:not(.collapsed) #pChev { transform: rotate(180deg); }
+
+  #panel { max-height: 0; transition: max-height .4s ease; }
+  #player:not(.collapsed) #panel { max-height: 440px; }
+  #panelInner { padding: 2px 18px 16px; }
+  #barWrap { padding: 12px 0 10px; cursor: pointer; touch-action: none; }
+  #bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.18); position: relative; }
+  #barFill { height: 100%; width: 0; border-radius: 3px; background: linear-gradient(90deg, #ffc2d2, #ff6f91); position: relative; }
+  #barFill::after {
+    content: ''; position: absolute; right: -7px; top: -4.5px; width: 14px; height: 14px;
+    border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255,111,145,.3), 0 1px 4px rgba(0,0,0,.5);
+  }
+  #times { display: flex; justify-content: space-between; font-size: 10.5px; color: rgba(255,255,255,.6); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  #pControls { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 8px 0 6px; }
+  #pControls .pBtn { width: 42px; height: 42px; }
+  #pControls .pBtn svg { width: 20px; height: 20px; }
+  #pControls .pBtn.main { width: 54px; height: 54px; }
+  #pControls .pBtn.main svg { width: 24px; height: 24px; }
+  #volRow { display: flex; align-items: center; gap: 10px; margin: 8px 0 10px; color: rgba(255,255,255,.7); }
+  #volRow svg { width: 16px; height: 16px; fill: currentColor; flex: none; }
+  #vol { flex: 1; accent-color: #ff9db5; }
+  @media (hover: none) { #volRow { display: none; } }
+  #trackList {
+    list-style: none; max-height: 176px; overflow-y: auto; touch-action: pan-y;
+    border-top: 1px solid rgba(255,255,255,.12); padding-top: 8px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent;
+  }
+  #trackList li {
+    padding: 8px 10px; border-radius: 12px; font-size: 12.5px; cursor: pointer;
+    display: flex; gap: 10px; align-items: baseline; transition: background .2s;
+  }
+  #trackList li:hover { background: rgba(255,255,255,.08); }
+  #trackList li.current { background: linear-gradient(90deg, rgba(255,157,181,.28), rgba(255,157,181,.08)); }
+  #trackList li.current .t { color: #ffc9d7; }
+  #trackList li.current .n { color: #ff9db5; }
+  #trackList li .t { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: none; max-width: 58%; }
+  #trackList li .a { color: rgba(255,255,255,.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; font-style: italic; }
+  #trackList li .n { width: 16px; flex: none; color: rgba(255,255,255,.4); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+
+  /* ── Hart met brieven ── */
+  #heartBtn {
+    position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+    width: 66px; height: 60px;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,.5));
+    transition: transform .25s;
+  }
+  #heartBtn:active { transform: scale(.92); }
+  #heartBtn.open { transform: scale(1.12); }
+  #heartBtn svg { width: 100%; height: 100%; overflow: visible; }
+  #heartBtn .glow { opacity: 0; transition: opacity .5s; }
+  #heartBtn.hasNew .glow, #heartBtn.open .glow { opacity: 1; }
+  #heartBtn.hasNew { animation: heartBeat 1.5s ease-in-out infinite; }
+  @keyframes heartBeat {
+    0%, 70%, 100% { transform: scale(1); }
+    14% { transform: scale(1.18); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.12); }
+  }
+  #badge {
+    position: absolute; top: -6px; right: -4px; min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 11px; background: #fff; color: #d63a62;
+    font-size: 12px; font-weight: 700; line-height: 22px; text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.4); display: none;
+  }
+  #heartBtn.hasNew #badge { display: block; }
+
+  #letterModal {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  #letterModal.show { opacity: 1; pointer-events: auto; }
+  #letterCard {
+    position: relative; width: min(370px, 100%); max-height: 80vh; overflow-y: auto; touch-action: pan-y;
+    padding: 22px 20px 12px; border-radius: 6px;
+    color: #4a3520;
+    background:
+      repeating-linear-gradient(0deg, rgba(120,80,30,.045) 0 1px, transparent 1px 28px),
+      linear-gradient(160deg, #f8edd6, #ecdcb8);
+    box-shadow: 0 24px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(140,90,30,.18);
+    transform: translateY(24px) scale(.96); transition: transform .45s cubic-bezier(.2,.9,.3,1.1);
+  }
+  #letterModal.show #letterCard { transform: none; }
+  #letterClose { position: absolute; top: 8px; right: 12px; font-size: 26px; color: #8a6a44; line-height: 1; padding: 4px 8px; }
+  #letterCard h2 { font-family: var(--hand); font-size: 34px; font-weight: 700; line-height: 1; }
+  #letterSub { font-size: 12px; color: #8a6a44; margin: 4px 0 16px; }
+  .slot {
+    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+    padding: 14px; margin-bottom: 10px; border-radius: 6px;
+    background: rgba(255,255,255,.45); border: 1px solid rgba(120,80,30,.2);
+  }
+  .slot .ico { font-size: 28px; flex: none; }
+  .slot b { display: block; font-size: 15px; }
+  .slot b::first-letter, .slot .sHead::first-letter { text-transform: uppercase; }
+  .slot small { color: #8a6a44; font-size: 12px; }
+  .slot.locked { opacity: .55; }
+  .slot.unread { background: #fff7e0; border-color: #d9a441; box-shadow: 0 2px 10px rgba(217,164,65,.35); animation: nudge 2.6s ease-in-out infinite; }
+  @keyframes nudge { 0%,100% { transform: none; } 50% { transform: translateY(-2px) rotate(-.6deg); } }
+  .slot.opened { display: block; background: rgba(255,255,255,.6); }
+  .slot.opened .sHead { font-size: 12px; color: #8a6a44; margin-bottom: 6px; }
+  .slot.opened p { font-family: var(--hand); font-size: 24px; line-height: 1.25; font-weight: 500; transform-origin: top; }
+  .slot.justOpened p { animation: unfold .8s cubic-bezier(.2,.8,.3,1) both; }
+  @keyframes unfold { from { opacity: 0; transform: scaleY(.1); } to { opacity: 1; transform: scaleY(1); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    #heartBtn.hasNew, .slot.unread, .disc { animation: none; }
+  }
 </style>
 </head>
 <body>
@@ -196,15 +333,44 @@
 <div id="intro"><h1>06.06.2026</h1></div>
 
 <div id="bg"></div>
+<div id="vignette"></div>
 <div id="hearts"></div>
 
-<div id="controls">
-  <button class="ctrlBtn" id="prevBtn" onclick="prevSong()">⏮</button>
-  <button class="ctrlBtn" id="muteBtn" onclick="toggleMute()">PLAY</button>
-  <button class="ctrlBtn" id="nextBtn" onclick="nextSong()">⏭</button>
+<!-- Touw en polaroids -->
+<svg id="rope" aria-hidden="true"></svg>
+<div id="stage"></div>
+
+<!-- Muziekspeler -->
+<div id="player" class="collapsed">
+  <div id="pill">
+    <div class="disc"></div>
+    <div id="pInfo" onclick="togglePanel()">
+      <div id="pTitle">–</div>
+      <div id="pArtist">–</div>
+    </div>
+    <button class="pBtn main" id="pPlay" aria-label="Afspelen / pauzeren"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="pBtn" id="pNext" aria-label="Volgend nummer"><svg viewBox="0 0 24 24"><path d="M6 6l8.5 6L6 18V6zm9 0h2.5v12H15V6z"/></svg></button>
+    <button class="pBtn" onclick="togglePanel()" aria-label="Speler uitklappen"><span id="pChev"><svg class="st" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span></button>
+  </div>
+  <div id="panel">
+    <div id="panelInner">
+      <div id="barWrap"><div id="bar"><div id="barFill"></div></div></div>
+      <div id="times"><span id="tCur">0:00</span><span id="tDur">0:00</span></div>
+      <div id="pControls">
+        <button class="pBtn" id="pShuffle" aria-label="Willekeurig"><svg class="st" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+        <button class="pBtn" id="pPrev" aria-label="Vorig nummer"><svg viewBox="0 0 24 24"><path d="M18 6l-8.5 6L18 18V6zM6.5 6H9v12H6.5V6z"/></svg></button>
+        <button class="pBtn main" id="pPlay2" aria-label="Afspelen / pauzeren"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="pBtn" id="pNext2" aria-label="Volgend nummer"><svg viewBox="0 0 24 24"><path d="M6 6l8.5 6L6 18V6zm9 0h2.5v12H15V6z"/></svg></button>
+      </div>
+      <div id="volRow"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0014 8v8a4.5 4.5 0 002.5-4z"/></svg><input id="vol" type="range" min="0" max="1" step="0.01" value="1"></div>
+      <ul id="trackList"></ul>
+    </div>
+  </div>
 </div>
+
+<!-- Counter -->
 <div id="counter">
-  <div id="miniHeart" onclick="revealEasterEgg()">❤️</div>
+  <div id="miniHeart">❤️</div>
   <div id="counter-label">Together since</div>
   <div class="units">
     <div class="unit"><div class="unit-num" id="d">0</div><div class="unit-lbl">days</div></div>
@@ -214,173 +380,477 @@
   </div>
 </div>
 
-<audio id="audio" loop></audio>
+<!-- Hart met brieven -->
+<button id="heartBtn" aria-label="Open de brieven">
+  <svg viewBox="0 0 64 58">
+    <defs>
+      <linearGradient id="heartG" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ff7a9c"/><stop offset="1" stop-color="#d42a58"/>
+      </linearGradient>
+      <radialGradient id="glowG">
+        <stop offset="0" stop-color="#ffb3c6" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#ff7a9c" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <ellipse class="glow" cx="32" cy="28" rx="38" ry="32" fill="url(#glowG)"/>
+    <path d="M32 54 C10 38 3 28 3 18 C3 9 10 3 18 3 C24 3 29 6 32 11 C35 6 40 3 46 3 C54 3 61 9 61 18 C61 28 54 38 32 54 Z" fill="url(#heartG)" stroke="#a81c44" stroke-width="1.5" stroke-linejoin="round"/>
+    <ellipse cx="19" cy="15" rx="7" ry="4.5" transform="rotate(-35 19 15)" fill="#fff" opacity=".45"/>
+  </svg>
+  <span id="badge">0</span>
+</button>
 
-<div id="easterEgg">
-  <div id="easterEggContent">
-    <p id="easterEggText">✨ Hmm... de hint gevonden zo te zien, volgensmij zit je wel gebakken. Had ik trouwens al vermeld dat ik van je hou? Volgensmij niet. ✨</p>
-    <button id="easterEggClose" onclick="closeEasterEgg()">Sluiten</button>
+<!-- Brieven-venster -->
+<div id="letterModal">
+  <div id="letterCard">
+    <button id="letterClose" aria-label="Sluiten">×</button>
+    <h2>Voor jou</h2>
+    <div id="letterSub"></div>
+    <div id="letterBody"></div>
   </div>
 </div>
 
+<!-- Foto groot -->
+<div id="lightbox">
+  <div class="lbFrame">
+    <img id="lbImg" alt="">
+  </div>
+</div>
+
+<div id="fingerHearts"></div>
+
+<audio id="audio"></audio>
+
 <script>
-  const audio = document.getElementById('audio');
-  const bg = document.getElementById('bg');
-  const muteBtn = document.getElementById('muteBtn');
+const $ = (id) => document.getElementById(id);
+const START = new Date('2026-06-06T00:00:00');
 
-  // ── Playlist: voeg hier je nummers toe ──
-  // Zet gewoon bestandsnamen (of paden) in deze array, in de volgorde die je wilt.
-  const PLAYLIST = [
-    "Michael Bublé - Everything [Official Music Video].mp3",
-    "@coldplay - The Scientist (Lyrics).mp3",
-    "Chef'Special - In Your Arms (Official Video).mp3",
-    "Don McLean - American Pie (Lyrics).mp3",
-    "Extreme - More Than Words (Lyrics).mp3",
-    "Harry Styles - Sign of the Times (Lyrics).mp3",
-    "Jason Mraz - I'm Yours (Lyrics).mp3",
-    "Labrinth - Beneath Your Beautiful (Official Video) ft. Emeli Sandé.mp3",
-    "Matt Simons - With you ( lyrics ).mp3",
-    "Mumford & Sons - I Will Wait (Lyrics).mp3",
-    "Niels Geusebroek - Take Your Time Girl (Official Video).mp3",
-    "Soldier on Di-rect  lyrics.mp3",
-    "Taylor Swift - Love Story (Lyrics).mp3"
-  ];
+/* =====================================================
+   INSTELLINGEN – hier pas je alles aan
+   ===================================================== */
 
-  let currentTrack = 0;
+// Foto's: zet hier je bestandsnamen neer. Ideaal: vierkant, 1080 x 1080 px.
+// (Voor de test is steeds dezelfde foto gebruikt.)
+const PHOTOS = [
+  '1.png',
+  '2.png',
+  '3.png',
+  '4.png',
+  '5.png',
+  '6.png'
+];
+const ROTATE_EVERY_MS = 7000;
 
-  function loadTrack(index, autoplay) {
-    // Zorgt dat index altijd binnen de playlist blijft (ook bij negatief/overflow)
-    currentTrack = (index + PLAYLIST.length) % PLAYLIST.length;
-    audio.src = PLAYLIST[currentTrack];
+// Muziek: titel en artiest zijn op de gok ingevuld, pas ze gerust aan.
+const PLAYLIST = [
+  { file: "Michael Bublé - Everything [Official Music Video].mp3",                    title: "Everything",              artist: "Michael Bublé" },
+  { file: "@coldplay - The Scientist (Lyrics).mp3",                                   title: "The Scientist",           artist: "Coldplay" },
+  { file: "Chef'Special - In Your Arms (Official Video).mp3",                         title: "In Your Arms",            artist: "Chef'Special" },
+  { file: "Don McLean - American Pie (Lyrics).mp3",                                   title: "American Pie",            artist: "Don McLean" },
+  { file: "Extreme - More Than Words (Lyrics).mp3",                                   title: "More Than Words",         artist: "Extreme" },
+  { file: "Harry Styles - Sign of the Times (Lyrics).mp3",                            title: "Sign of the Times",       artist: "Harry Styles" },
+  { file: "Jason Mraz - I'm Yours (Lyrics).mp3",                                      title: "I'm Yours",               artist: "Jason Mraz" },
+  { file: "Labrinth - Beneath Your Beautiful (Official Video) ft. Emeli Sandé.mp3",   title: "Beneath Your Beautiful",  artist: "Labrinth ft. Emeli Sandé" },
+  { file: "Matt Simons - With you ( lyrics ).mp3",                                    title: "With You",                artist: "Matt Simons" },
+  { file: "Mumford & Sons - I Will Wait (Lyrics).mp3",                                title: "I Will Wait",             artist: "Mumford & Sons" },
+  { file: "Niels Geusebroek - Take Your Time Girl (Official Video).mp3",              title: "Take Your Time Girl",     artist: "Niels Geusebroek" },
+  { file: "Soldier on Di-rect  lyrics.mp3",                                           title: "Soldier On",              artist: "Di-rect" },
+  { file: "Taylor Swift - Love Story (Lyrics).mp3",                                   title: "Love Story",              artist: "Taylor Swift" }
+];
 
-    if (autoplay) {
-      audio.play().then(() => {
-        muteBtn.textContent = 'PAUSE';
-      }).catch(() => {});
-    } else {
-      muteBtn.textContent = 'PLAY';
-    }
-  }
+// Brieven: één per datum, openen vanaf 07:00 's ochtends.
+// Wil je een datum erbij of weg? Voeg een regel toe of haal hem weg, de rest past zich aan.
+const LETTER_HOUR = 7;
+const LETTERS = [
+  { date: '2026-10-17', text: "Goedemorgen, mooi mens. Dit is de eerste brief uit het hartje. Er komen er nog drie, maar deze is voor jou om mee te beginnen." },
+  { date: '2026-10-19', text: "Weet je wat ik nog steeds het mooiste vind? Hoe jij lacht als je denkt dat niemand kijkt." },
+  { date: '2026-10-21', text: "Kleine reminder: je bent precies genoeg. Op elke dag, in elke bui." },
+  { date: '2026-10-23', text: "Op een schaal van 1 tot 10 hou ik van je 11. Ja, dat kan. Ik heb het uitgerekend." }
+];
+// TEST: op true staan alle brieven direct open. Op false gelden de echte data en tijden.
+const PREVIEW_ALL_OPEN = false;
 
-  function nextSong() {
-    loadTrack(currentTrack + 1, true);
-  }
 
-  function prevSong() {
-    loadTrack(currentTrack - 1, true);
-  }
-
-  // ── Mute/play toggle ──
-  function toggleMute() {
-    if (audio.paused) {
-      audio.play().then(() => muteBtn.textContent = 'PAUSE').catch(() => {});
-    } else {
-      audio.pause();
-      muteBtn.textContent = 'PLAY';
-    }
-  }
-
-  // Eerste nummer klaarzetten (nog niet afspelen, wacht op user-interactie)
-  loadTrack(0, false);
-
-  // ── Intro fade ──
-  window.addEventListener("DOMContentLoaded", () => {
-    const intro = document.getElementById("intro");
-    if (!intro) return;
-
-    setTimeout(() => { intro.style.opacity = "0"; }, 2500);
-    setTimeout(() => { intro.remove(); }, 4200);
-  });
-
-  // ── Countdown ──
-  const START = new Date('2026-06-06T00:00:00');
-
-  function tick() {
-    const diff = Date.now() - START.getTime();
-    const abs  = Math.abs(diff);
-    const sign = diff < 0;
-
-    document.getElementById('counter-label').textContent =
-      sign ? '✨ Starting in' : '';
-
-    document.getElementById('d').textContent = Math.floor(abs / 86400000);
-    document.getElementById('h').textContent = Math.floor((abs % 86400000) / 3600000);
-    document.getElementById('m').textContent = Math.floor((abs % 3600000)  / 60000);
-    document.getElementById('s').textContent = Math.floor((abs % 60000)    / 1000);
-  }
-  setInterval(tick, 1000);
-  tick();
-
-  // ── Floating hearts ──
-  const EMOJIS = ['❤️','🩷','💕','💗','💖','🤍','💓'];
-
-  function spawnHeart() {
-    const el = document.createElement('div');
-    el.className = 'heart';
-    el.textContent = EMOJIS[Math.random() * EMOJIS.length | 0];
-    const size = 14 + Math.random() * 22;
-    const dur  = 5  + Math.random() * 7;
-    el.style.cssText = `
-      left: ${Math.random() * 100}vw;
-      font-size: ${size}px;
-      animation-duration: ${dur}s;
-      animation-delay: ${Math.random() * 1.5}s;
-    `;
-    document.getElementById('hearts').appendChild(el);
-    setTimeout(() => el.remove(), (dur + 2) * 1000);
-  }
-  setInterval(spawnHeart, 3000);
-  for (let i = 0; i < 5; i++) spawnHeart(); // burst on load
-
-  function burstHearts(amount = 4) {
-    for (let i = 0; i < amount; i++) spawnHeart();
-  }
-
-  // ── First-touch: start audio + burst hearts ──
-  document.addEventListener('pointerdown', () => {
-    if (audio.src && audio.paused) {
-      audio.play().then(() => {
-        muteBtn.textContent = 'PAUSE';
-      }).catch(() => {});
-    }
-  }, { once: true });
-
-  document.addEventListener('pointerdown', () => {
-    burstHearts(5);
-  }, { passive: true });
-  
-    // ── Easter egg ──
-function revealEasterEgg() {
-  document.getElementById('easterEgg').classList.add('show');
-  burstHearts(10);
+/* =====================================================
+   ACHTERGROND (parallax)
+   ===================================================== */
+const bg = $('bg');
+let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+function animateBG() {
+  currentX += (targetX - currentX) * 0.08;
+  currentY += (targetY - currentY) * 0.08;
+  bg.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.06)`;
+  requestAnimationFrame(animateBG);
 }
-function closeEasterEgg() {
-  document.getElementById('easterEgg').classList.remove('show');
+animateBG();
+document.addEventListener('mousemove', (e) => {
+  targetX = (e.clientX / window.innerWidth - 0.5) * 10;
+  targetY = (e.clientY / window.innerHeight - 0.5) * 10;
+});
+window.addEventListener('deviceorientation', (e) => {
+  if (!e.gamma || !e.beta) return;
+  targetX = e.gamma / 3;
+  targetY = e.beta / 3;
+});
+
+/* =====================================================
+   INTRO + COUNTER
+   ===================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  const intro = $('intro');
+  setTimeout(() => { intro.style.opacity = '0'; }, 2500);
+  setTimeout(() => { intro.remove(); }, 4200);
+});
+
+function tick() {
+  const diff = Date.now() - START.getTime();
+  const abs = Math.abs(diff);
+  $('counter-label').textContent = diff < 0 ? '✨ Starting in' : '';
+  $('d').textContent = Math.floor(abs / 86400000);
+  $('h').textContent = Math.floor((abs % 86400000) / 3600000);
+  $('m').textContent = Math.floor((abs % 3600000) / 60000);
+  $('s').textContent = Math.floor((abs % 60000) / 1000);
+}
+setInterval(tick, 1000); tick();
+
+
+/* =====================================================
+   HARTJES
+   ===================================================== */
+const EMOJIS = ['❤️','🩷','💕','💗','💖','🤍','💓'];
+const rndEmoji = () => EMOJIS[Math.random() * EMOJIS.length | 0];
+
+// Rustige hartjes onderaan
+function spawnHeart() {
+  const el = document.createElement('div');
+  el.className = 'heart';
+  el.textContent = rndEmoji();
+  const size = 14 + Math.random() * 22;
+  const dur = 5 + Math.random() * 7;
+  el.style.cssText = `left:${Math.random() * 100}vw; font-size:${size}px; animation-duration:${dur}s; animation-delay:${Math.random() * 1.5}s;`;
+  $('hearts').appendChild(el);
+  setTimeout(() => el.remove(), (dur + 2) * 1000);
+}
+setInterval(spawnHeart, 3000);
+for (let i = 0; i < 5; i++) spawnHeart();
+
+// Hartjes uit je vingertop
+const fingerLayer = $('fingerHearts');
+function heartAt(x, y, spread = 1) {
+  const el = document.createElement('div');
+  el.className = 'fHeart';
+  el.textContent = rndEmoji();
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.fontSize = (14 + Math.random() * 18) + 'px';
+  fingerLayer.appendChild(el);
+  const dx = (Math.random() - 0.5) * 130 * spread;
+  const rise = 90 + Math.random() * 150;
+  const rot = (Math.random() - 0.5) * 70;
+  const anim = el.animate([
+    { transform: 'translate(-50%,-50%) scale(.3) rotate(0deg)', opacity: 1 },
+    { transform: `translate(calc(-50% + ${dx}px), calc(-50% - ${rise}px)) scale(1.15) rotate(${rot}deg)`, opacity: 0 }
+  ], { duration: 1100 + Math.random() * 900, easing: 'cubic-bezier(.2,.7,.3,1)' });
+  anim.onfinish = () => el.remove();
+}
+function burstAt(x, y, n = 6) { for (let i = 0; i < n; i++) heartAt(x, y); }
+
+let isDown = false, lastTrail = 0, lastX = 0, lastY = 0;
+document.addEventListener('pointerdown', (e) => {
+  isDown = true; lastX = e.clientX; lastY = e.clientY;
+  burstAt(e.clientX, e.clientY, 5);
+}, { passive: true });
+document.addEventListener('pointermove', (e) => {
+  if (!isDown) return;
+  const now = performance.now();
+  if (now - lastTrail < 55 || Math.hypot(e.clientX - lastX, e.clientY - lastY) < 14) return;
+  lastTrail = now; lastX = e.clientX; lastY = e.clientY;
+  heartAt(e.clientX, e.clientY, 0.5);
+}, { passive: true });
+['pointerup', 'pointercancel'].forEach(t => document.addEventListener(t, () => { isDown = false; }, { passive: true }));
+
+/* =====================================================
+   POLAROIDS AAN HET TOUW
+   ===================================================== */
+const stage = $('stage');
+const rope = $('rope');
+const N = PHOTOS.length;
+const items = PHOTOS.map((p, i) => {
+  const el = document.createElement('div');
+  el.className = 'polaroid';
+  el.dataset.i = i;
+  el.innerHTML = `<div class="pin"></div><div class="frame"><img src="${p}" alt="" draggable="false"></div>`;
+  stage.appendChild(el);
+  return { el, tilt: (Math.random() - 0.5) * 6, phase: Math.random() * 6.28, k: 0.8 + Math.random() * 0.5 };
+});
+
+let W = innerWidth, cardW = 230, spacing = 250, y0 = 78, sag = 34;
+function layout() {
+  W = innerWidth;
+  cardW = Math.min(240, W * 0.62);
+  spacing = cardW * 1.1;
+  y0 = 74 + (innerWidth > 700 ? 10 : 0);
+  sag = Math.min(40, W * 0.09);
+  stage.style.setProperty('--cw', cardW + 'px');
+  const H = y0 + sag + 24;
+  rope.setAttribute('width', W);
+  rope.setAttribute('height', H);
+  rope.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const d = `M-30 ${y0 - 3} L0 ${y0} Q${W / 2} ${y0 + 2 * sag} ${W} ${y0} L${W + 30} ${y0 - 3}`;
+  rope.innerHTML = `
+    <path d="${d}" fill="none" stroke="#5b4326" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--rope')}" stroke-width="5" stroke-linecap="round"/>
+    <path d="${d}" fill="none" stroke="${getComputedStyle(document.documentElement).getPropertyValue('--rope-light')}" stroke-width="5" stroke-dasharray="2.5 6" stroke-linecap="butt" opacity=".75"/>`;
+}
+layout();
+addEventListener('resize', layout);
+
+const ropeY = (x) => { const t = Math.min(1, Math.max(0, x / W)); return y0 + sag * 4 * t * (1 - t); };
+const wrapD = (i, pos) => { const d = i - pos; return ((d + N / 2) % N + N) % N - N / 2; };
+
+let pos = 0, target = 0, prevPos = 0, pVel = 0, pAng = 0;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function frame(ts) {
+  const t = ts / 1000;
+  pos += (target - pos) * 0.075;
+  if (Math.abs(target - pos) < 0.0005) pos = target;
+
+  // slinger-effect: de hele rij zwiept even na als hij beweegt
+  const v = pos - prevPos; prevPos = pos;
+  pVel += -v * 8;
+  pVel += -0.05 * pAng;
+  pVel *= 0.94;
+  pAng = Math.max(-20, Math.min(20, pAng + pVel));
+
+  for (let i = 0; i < N; i++) {
+    const it = items[i];
+    const d = wrapD(i, pos);
+    const ad = Math.abs(d);
+    if (ad > 2.6) { it.el.style.visibility = 'hidden'; continue; }
+    it.el.style.visibility = 'visible';
+    const x = W / 2 + d * spacing;
+    const y = ropeY(x);
+    const sway = reduceMotion ? 0 : Math.sin(t * 1.2 + it.phase) * 1.4;
+    const ang = it.tilt + sway + pAng * it.k;
+    const s = 1 - 0.1 * Math.min(ad, 2);
+    it.el.style.transform = `translate3d(${x - cardW / 2}px, ${y}px, 0) rotate(${ang}deg) scale(${s})`;
+    it.el.style.opacity = Math.max(0, 1 - 0.3 * Math.max(0, ad - 0.3));
+    it.el.style.zIndex = Math.round(100 - ad * 10);
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// automatisch + handmatig roteren
+let paused = false, autoTimer;
+function go(delta) { target += delta; resetAuto(); }
+function resetAuto() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => { if (!paused && !document.hidden) target += 1; }, ROTATE_EVERY_MS);
+}
+resetAuto();
+
+let sx = 0, sy = 0, sDown = false;
+stage.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; sDown = true; });
+stage.addEventListener('pointercancel', () => { sDown = false; });
+stage.addEventListener('pointerup', (e) => {
+  if (!sDown) return; sDown = false;
+  const dx = e.clientX - sx, dy = e.clientY - sy;
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); return; }
+  if (Math.hypot(dx, dy) < 10) {
+    const el = e.target.closest('.polaroid');
+    if (!el) return;
+    const i = +el.dataset.i;
+    const d = wrapD(i, pos);
+    if (Math.abs(d) < 0.5) openLightbox(i); else go(Math.round(d));
+  }
+});
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft') go(-1);
+  if (e.key === 'Escape') { closeLightbox(); closeLetters(); }
+});
+
+// foto groot
+function openLightbox(i) {
+  $('lbImg').src = PHOTOS[i];
+  $('lightbox').classList.add('show');
+  paused = true;
+}
+function closeLightbox() { $('lightbox').classList.remove('show'); paused = false; }
+$('lightbox').addEventListener('click', closeLightbox);
+
+/* =====================================================
+   MUZIEKSPELER
+   ===================================================== */
+const audio = $('audio');
+let currentTrack = 0, shuffle = false;
+
+const trackList = $('trackList');
+PLAYLIST.forEach((tr, i) => {
+  const li = document.createElement('li');
+  li.innerHTML = `<span class="n">${i + 1}</span><span class="t"></span><span class="a"></span>`;
+  li.querySelector('.t').textContent = tr.title;
+  li.querySelector('.a').textContent = tr.artist;
+  li.addEventListener('click', () => loadTrack(i, true));
+  trackList.appendChild(li);
+});
+
+function fmt(s) {
+  if (!isFinite(s)) return '0:00';
+  s = Math.floor(s);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 }
 
-  // ── Parallax background ──
-  let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-
-  function animateBG() {
-    currentX += (targetX - currentX) * 0.08;
-    currentY += (targetY - currentY) * 0.08;
-    bg.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.06)`;
-    requestAnimationFrame(animateBG);
+function loadTrack(index, autoplay) {
+  currentTrack = (index + PLAYLIST.length) % PLAYLIST.length;
+  const tr = PLAYLIST[currentTrack];
+  audio.src = encodeURI(tr.file);
+  $('pTitle').textContent = tr.title;
+  $('pArtist').textContent = tr.artist;
+  [...trackList.children].forEach((li, i) => li.classList.toggle('current', i === currentTrack));
+  $('barFill').style.width = '0%';
+  $('tCur').textContent = '0:00'; $('tDur').textContent = '0:00';
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: tr.title, artist: tr.artist, album: '06.06.2026' });
   }
-  animateBG();
+  if (autoplay) audio.play().catch(() => {});
+}
+function nextSong() {
+  if (shuffle && PLAYLIST.length > 1) {
+    let r; do { r = Math.random() * PLAYLIST.length | 0; } while (r === currentTrack);
+    loadTrack(r, true);
+  } else loadTrack(currentTrack + 1, true);
+}
+function prevSong() {
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  loadTrack(currentTrack - 1, true);
+}
+function togglePlay() {
+  if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+}
+function togglePanel() { $('player').classList.toggle('collapsed'); }
 
-  document.addEventListener("mousemove", (e) => {
-    targetX = (e.clientX / window.innerWidth - 0.5) * 10;
-    targetY = (e.clientY / window.innerHeight - 0.5) * 10;
-  });
+$('pPlay').onclick = togglePlay; $('pPlay2').onclick = togglePlay;
+$('pNext').onclick = nextSong;   $('pNext2').onclick = nextSong;
+$('pPrev').onclick = prevSong;
+$('pShuffle').onclick = () => { shuffle = !shuffle; $('pShuffle').classList.toggle('on', shuffle); };
+$('vol').addEventListener('input', (e) => { audio.volume = +e.target.value; });
 
-  window.addEventListener("deviceorientation", (e) => {
-    if (!e.gamma || !e.beta) return;
-    targetX = e.gamma / 3;
-    targetY = e.beta / 3;
-  });
-  
+const ICON_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';
+function setPlayIcons(playing) {
+  $('pPlay').innerHTML = $('pPlay2').innerHTML = playing ? ICON_PAUSE : ICON_PLAY;
+  $('player').classList.toggle('playing', playing);
+}
+audio.addEventListener('play',  () => setPlayIcons(true));
+audio.addEventListener('pause', () => setPlayIcons(false));
+audio.addEventListener('ended', nextSong);          // automatisch volgend nummer
+audio.addEventListener('loadedmetadata', () => { $('tDur').textContent = fmt(audio.duration); });
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  $('barFill').style.width = (audio.currentTime / audio.duration * 100) + '%';
+  $('tCur').textContent = fmt(audio.currentTime);
+});
 
+// spoelen
+const barWrap = $('barWrap');
+function seekTo(e) {
+  const r = $('bar').getBoundingClientRect();
+  const ratio = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+  if (audio.duration) audio.currentTime = ratio * audio.duration;
+}
+let seeking = false;
+barWrap.addEventListener('pointerdown', (e) => { seeking = true; barWrap.setPointerCapture(e.pointerId); seekTo(e); });
+barWrap.addEventListener('pointermove', (e) => { if (seeking) seekTo(e); });
+barWrap.addEventListener('pointerup', () => { seeking = false; });
+
+// vergrendelscherm / notificatie-knoppen
+if ('mediaSession' in navigator) {
+  navigator.mediaSession.setActionHandler('play', () => audio.play());
+  navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+  navigator.mediaSession.setActionHandler('nexttrack', nextSong);
+  navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+}
+
+loadTrack(0, false);
+
+// eerste tik ergens op de pagina start de muziek (browsers staan geen autoplay toe)
+document.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('#player')) return;
+  if (audio.paused) audio.play().catch(() => {});
+}, { once: true });
+
+/* =====================================================
+   HART MET BRIEVEN OP VASTE DATA
+   ===================================================== */
+const heartBtn = $('heartBtn');
+const modal = $('letterModal');
+
+function loadRead() { try { return JSON.parse(localStorage.getItem('lettersRead') || '{}'); } catch (e) { return {}; } }
+function saveRead() { try { localStorage.setItem('lettersRead', JSON.stringify(readMap)); } catch (e) {} }
+let readMap = loadRead();
+
+function openTime(L) {
+  const [y, m, d] = L.date.split('-').map(Number);
+  return new Date(y, m - 1, d, LETTER_HOUR, 0, 0);
+}
+const isUnlocked = (L) => PREVIEW_ALL_OPEN || Date.now() >= openTime(L).getTime();
+const dateLabel = (L) => openTime(L).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+
+function unreadCount() { return LETTERS.filter(L => isUnlocked(L) && !readMap[L.date]).length; }
+function renderHeart() {
+  const n = unreadCount();
+  $('badge').textContent = n;
+  heartBtn.classList.toggle('hasNew', n > 0);
+}
+
+let justOpened = null;
+function renderLetters() {
+  const opened = LETTERS.filter(L => readMap[L.date]).length;
+  $('letterSub').textContent = `${opened} van ${LETTERS.length} brieven geopend`;
+  const time = String(LETTER_HOUR).padStart(2, '0') + ':00';
+  $('letterBody').innerHTML = LETTERS.map((L, i) => {
+    if (!isUnlocked(L)) {
+      return `<div class="slot locked"><span class="ico">🔒</span><div><b>Brief ${i + 1}</b><small>Opent op ${dateLabel(L)} om ${time}</small></div></div>`;
+    }
+    if (!readMap[L.date]) {
+      return `<button class="slot unread" data-key="${L.date}"><span class="ico">✉️</span><div><b>Brief ${i + 1}</b><small>${dateLabel(L)} · tik om te openen</small></div></button>`;
+    }
+    return `<div class="slot opened ${justOpened === L.date ? 'justOpened' : ''}"><div class="sHead">✉️ ${dateLabel(L)}</div><p>${L.text}</p></div>`;
+  }).join('');
+  justOpened = null;
+}
+
+$('letterBody').addEventListener('click', (e) => {
+  const btn = e.target.closest('.slot.unread');
+  if (!btn) return;
+  const key = btn.dataset.key;
+  readMap[key] = true; saveRead();
+  justOpened = key;
+  const r = btn.getBoundingClientRect();
+  burstAt(r.left + r.width / 2, r.top + r.height / 2, 12);
+  renderLetters(); renderHeart();
+});
+
+function openLetters() {
+  renderLetters();
+  heartBtn.classList.add('open');
+  modal.classList.add('show');
+  paused = true;
+}
+function closeLetters() {
+  heartBtn.classList.remove('open');
+  modal.classList.remove('show');
+  paused = false;
+}
+heartBtn.addEventListener('click', openLetters);
+$('letterClose').addEventListener('click', closeLetters);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeLetters(); });
+
+renderHeart();
+setInterval(renderHeart, 60000);
+document.addEventListener('visibilitychange', renderHeart);
 </script>
 </body>
 </html>
