@@ -30,11 +30,13 @@
   /* ── Achtergrond ── */
 #bg {
   position: fixed; inset: 0; z-index: 0;
-  background-color: #2a2230;
-  filter: brightness(.78);
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 30%, rgba(255,157,181,.42), rgba(255,157,181,0) 70%),
+    radial-gradient(ellipse 70% 50% at 20% 85%, rgba(150,120,255,.28), rgba(150,120,255,0) 70%),
+    linear-gradient(180deg, #3a2840, #1f1826);
   will-change: transform;
   transform: translate3d(0,0,0) scale(1.06);
-  }
+}
   #vignette {
     position: fixed; inset: 0; z-index: 1; pointer-events: none;
     background:
