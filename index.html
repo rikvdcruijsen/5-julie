@@ -28,16 +28,12 @@
   button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; outline: none; }
 
   /* ── Achtergrond ── */
-  #bg {
-    position: fixed; inset: 0; z-index: 0;
-    background-color: #2a2230;
-    background-image: url('Ontwerp zonder titel (3).png');
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
-    filter: brightness(.78);
-    will-change: transform;
-    transform: translate3d(0,0,0) scale(1.06);
+#bg {
+  position: fixed; inset: 0; z-index: 0;
+  background-color: #2a2230;
+  filter: brightness(.78);
+  will-change: transform;
+  transform: translate3d(0,0,0) scale(1.06);
   }
   #vignette {
     position: fixed; inset: 0; z-index: 1; pointer-events: none;
